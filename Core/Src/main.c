@@ -18,6 +18,8 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usart.h"
+#include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -42,6 +44,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+uint8_t rx_byte;
 
 /* USER CODE END PV */
 
@@ -84,7 +87,11 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
+  MX_GPIO_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  uint8_t rx_byte;
+HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
 
   /* USER CODE END 2 */
 
@@ -141,6 +148,14 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (huart->Instance == USART2)
+    {
+        HAL_UART_Transmit(&huart2, &rx_byte, 1, HAL_MAX_DELAY);
+        HAL_UART_Receive_IT(&huart2, &rx_byte, 1);
+    }
+}
 
 /* USER CODE END 4 */
 
